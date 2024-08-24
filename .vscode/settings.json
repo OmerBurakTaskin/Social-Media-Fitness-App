@@ -1,0 +1,5 @@
+{
+    "editor.wordWrapColumn": 120,
+    "editor.wordWrap": "on",
+    "java.configuration.updateBuildConfiguration": "interactive"
+}
