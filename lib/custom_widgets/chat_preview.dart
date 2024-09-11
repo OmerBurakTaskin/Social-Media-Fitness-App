@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import "package:gym_application/models/user.dart";
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

@@ -28,10 +28,10 @@ class UserDbService {
 
   Future<User?> getSpecificUser(String userId) async {
     try {
-      final user = await _usersRef.doc(userId).get();
-      return user.data() as User;
+      final user = await _firestore.collection("users").doc(userId).get();
+      return User.fromJson(user.data()!);
     } catch (e) {
-      print("GET SPECIFIC USER ERROR: $e");
+      //throw Exception("Cant get specific user!");
       return null;
     }
   }
@@ -77,7 +77,7 @@ class UserDbService {
     }
   }
 
-  Future<List<String>> getChattingFriendsOfUser(String senderId) async {
+  Future<List<String>> getChattingFriendIdsOfUser(String senderId) async {
     try {
       final userDoc = await _usersRef.doc(senderId).get();
       final user = userDoc.data() as User?;
@@ -91,14 +91,22 @@ class UserDbService {
   Future<void> addChattingFriendToUser(
       String senderId, String receiverId) async {
     try {
-      final userDoc = await _usersRef.doc(senderId).get();
-      final user = userDoc.data() as User?;
-      if (user != null) {
-        List<String> chattingFriends = user.chattingFriends;
-        chattingFriends.add(receiverId);
+      final senderDoc = await _usersRef.doc(senderId).get();
+      final sender = senderDoc.data() as User?;
+      final receiverDoc = await _usersRef.doc(receiverId).get();
+      final receiver = receiverDoc.data() as User?;
+      if (sender != null && receiver != null) {
+        // adding their ids for one another
+        List<String> chattingFriendsOfSender = sender.chattingFriends;
+        chattingFriendsOfSender.add(receiverId);
         await _usersRef
             .doc(senderId)
-            .update({"chattingFriends": chattingFriends});
+            .update({"chattingFriends": chattingFriendsOfSender});
+        List<String> chattingFriendsOfReceiver = receiver.chattingFriends;
+        chattingFriendsOfReceiver.add(senderId);
+        await _usersRef
+            .doc(receiverId)
+            .update({"chattingFriends": chattingFriendsOfReceiver});
       }
     } catch (e) {
       print("ADD CHATROOM TO USER HATASI");
@@ -122,5 +130,18 @@ class UserDbService {
     // adding their ids for one another
     addFriendToUsers(senderId, receiverId);
     addFriendToUsers(receiverId, senderId);
+    _usersRef
+        .doc(receiverId)
+        .collection("pending-friend-requests")
+        .doc(senderId)
+        .delete(); // delete the request from the receiver
+  }
+
+  void declineFriendRequest(String senderId, String receiverId) async {
+    _usersRef
+        .doc(receiverId)
+        .collection("pending-friend-requests")
+        .doc(senderId)
+        .delete();
   }
 }

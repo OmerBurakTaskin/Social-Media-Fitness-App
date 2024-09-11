@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_application/custom_colors.dart';
 import 'package:gym_application/models/user.dart';
-import 'package:gym_application/screens/profile_screen.dart';
+import 'package:gym_application/screens/view_profile_screen.dart';
 import 'package:gym_application/services/user_db_service.dart';
 import 'package:gym_application/utils.dart';
 
@@ -46,25 +46,28 @@ class _FindUserScreenState extends State<FindUserScreen> {
   Container _findUserContainer() {
     return Container(
       decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 44, 43, 43),
-          borderRadius: BorderRadius.circular(15)),
+          color: Colors.transparent, borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: TextField(
           style: const TextStyle(color: Colors.white),
           cursorColor: const Color.fromARGB(255, 143, 139, 139),
-          decoration: const InputDecoration(
-            focusedBorder: OutlineInputBorder(
+          decoration: InputDecoration(
+            focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.transparent),
             ),
-            enabledBorder: OutlineInputBorder(
+            enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.transparent),
             ),
             hintText: "Search",
-            hintStyle: TextStyle(
-                color: Color.fromARGB(255, 143, 139, 139),
-                fontFamily: "arial greek"),
-            prefixIcon: Icon(Icons.search),
+            hintStyle: TextStyle(color: themeColor8, fontFamily: "arial greek"),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.only(bottom: 6.0),
+              child: Icon(
+                Icons.search,
+                color: themeColor7,
+              ),
+            ),
           ),
           controller: _controller,
           onChanged: (value) {
@@ -78,15 +81,8 @@ class _FindUserScreenState extends State<FindUserScreen> {
   }
 
   Widget _buildUserTile(User user) {
-    Future<List<dynamic>> getFutures() {
-      return Future.wait([
-        _userDbService.getSpecificUser(user.userId),
-        getProfilePictureURL(user.userId)
-      ]);
-    }
-
     return FutureBuilder(
-        future: getFutures(),
+        future: getProfilePictureURL(user.userId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -94,8 +90,7 @@ class _FindUserScreenState extends State<FindUserScreen> {
           } else if (snapshot.hasError) {
             return const Center(child: Text("Error while loading posts!"));
           } else if (snapshot.hasData && snapshot.data != null) {
-            User user = snapshot.data![0];
-            String ppUrl = snapshot.data?[1] ??
+            String ppUrl = snapshot.data ??
                 "https://i.pinimg.com/564x/bd/cc/de/bdccde33dea7c9e549b325635d2c432e.jpg";
             return ListTile(
               leading: CircleAvatar(
@@ -107,11 +102,16 @@ class _FindUserScreenState extends State<FindUserScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ProfileScreen(user: user)));
+                        builder: (context) =>
+                            ViewProfileScreen(profileOwner: user)));
               },
             );
           } else {
-            return const Center(child: Text("No user found"));
+            return Center(
+                child: Text(
+              "No user found",
+              style: lightGreyTextStyle,
+            ));
           }
         });
   }

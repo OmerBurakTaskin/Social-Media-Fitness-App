@@ -1,5 +1,6 @@
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import "package:gym_application/custom_colors.dart";
 import "package:gym_application/custom_widgets/custom_textfield.dart";
 import "package:gym_application/models/user.dart" as appuser;
 import "package:gym_application/screens/login_screen.dart";
@@ -63,28 +64,97 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Gym Application"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _nameTextField,
-            _surNameTextField,
-            _userNameTextField,
-            _emailTextField,
-            _passwordTextField,
-            _confirmPasswordTextField,
-            ElevatedButton(
-                onPressed: () {
-                  if (_passwordTextField.getText().trim() ==
-                      _confirmPasswordTextField.getText().trim()) {
-                    signUp(context, _emailTextField.getText().trim(),
-                        _passwordTextField.getText().trim());
-                  }
-                },
-                child: const Text("Sign Up"))
-          ],
+      backgroundColor: themeColor4,
+      body: SafeArea(
+        child: Center(
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 170,
+                      child: Center(
+                        child: Text(
+                          "Sign Up to Fitness App!",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: themeColor3,
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: themeColor3,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20.0, horizontal: 5),
+                          child: Column(
+                            children: [
+                              _nameTextField,
+                              _surNameTextField,
+                              _userNameTextField,
+                              _emailTextField,
+                              _passwordTextField,
+                              _confirmPasswordTextField,
+                              SizedBox(height: 20),
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                      fixedSize: WidgetStateProperty.all(Size(
+                                          MediaQuery.of(context).size.width -
+                                              50,
+                                          50)),
+                                      backgroundColor:
+                                          WidgetStateProperty.all(themeColor1)),
+                                  onPressed: () {
+                                    if (_passwordTextField.getText().trim() ==
+                                        _confirmPasswordTextField
+                                            .getText()
+                                            .trim()) {
+                                      signUp(
+                                          context,
+                                          _emailTextField.getText().trim(),
+                                          _passwordTextField.getText().trim());
+                                    }
+                                  },
+                                  child: Text(
+                                    "Sign Up",
+                                    style: TextStyle(
+                                        color: themeColor4, fontSize: 18),
+                                  )),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "Already have an account?",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text(
+                                        "Login",
+                                        style: TextStyle(color: themeColor4),
+                                      )),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

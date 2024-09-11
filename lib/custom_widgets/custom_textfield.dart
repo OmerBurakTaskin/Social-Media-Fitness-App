@@ -1,11 +1,14 @@
-import "package:flutter/material.dart";
+// ignore_for_file: prefer_const_constructors
 
-class CustomTextField extends StatefulWidget {
-  String labelText;
-  double padding;
-  bool obscureText;
+import "package:flutter/material.dart";
+import "package:gym_application/custom_colors.dart";
+
+class CustomTextField extends StatelessWidget {
+  final String labelText;
+  final double padding;
+  final bool obscureText;
   CustomTextField(this.padding, this.labelText, this.obscureText, {super.key});
-  TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
 
   String getText() {
     return _textEditingController.text;
@@ -16,20 +19,19 @@ class CustomTextField extends StatefulWidget {
   }
 
   @override
-  State<CustomTextField> createState() => _CustomTextFieldState();
-}
-
-class _CustomTextFieldState extends State<CustomTextField> {
-  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(widget.padding),
-      child: TextField(
-        controller: widget._textEditingController,
-        obscureText: widget.obscureText,
-        decoration: InputDecoration(
-            border: OutlineInputBorder(), labelText: widget.labelText),
-      ),
-    );
+        padding: EdgeInsets.all(padding),
+        child: TextField(
+          controller: _textEditingController,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: themeColor2)),
+              border: UnderlineInputBorder(),
+              labelText: labelText,
+              labelStyle: TextStyle(color: Colors.white)),
+          style: TextStyle(color: Colors.white),
+        ));
   }
 }

@@ -20,7 +20,7 @@ class AllChatsScreen extends StatelessWidget {
 
   Future<List<User?>> getReceivers() async {
     List<String> receiverIds =
-        await _userDbService.getChattingFriendsOfUser(_userId);
+        await _userDbService.getChattingFriendIdsOfUser(_userId);
     List<User?> receivers = [];
     for (var i in receiverIds) {
       final receiver = await _userDbService.getSpecificUser(i);
