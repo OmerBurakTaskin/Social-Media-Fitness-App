@@ -1,10 +1,12 @@
 import "package:flutter/material.dart";
 import "package:font_awesome_flutter/font_awesome_flutter.dart";
-import "package:gym_application/HomePage.dart";
+import "package:gym_application/home_page.dart";
 import "package:gym_application/custom_colors.dart";
+import "package:gym_application/screens/get_started_screens/get_started_screen.dart";
 import "package:gym_application/services/authentication_service.dart";
 import "package:gym_application/custom_widgets/custom_textfield.dart";
 import "package:gym_application/screens/signup_screen.dart";
+import "package:hive/hive.dart";
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,9 +23,12 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       var userCredentials =
           await AuthenticationService.signinWithEmailPassword(email, password);
-      if (AuthenticationService.emailVerified) {
+      if (AuthenticationService.emailVerified && Hive.isBoxOpen("bodyAssets")) {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomePage()));
+      } else if (AuthenticationService.emailVerified = true) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const GetStartedScreen()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Row(

@@ -9,14 +9,17 @@ import 'package:gym_application/services/post_db_service.dart';
 import 'package:gym_application/services/user_db_service.dart';
 
 // ignore: must_be_immutable
-class ViewProfileScreen extends StatelessWidget {
+class ViewProfileScreen extends StatefulWidget {
   final User profileOwner;
+  const ViewProfileScreen({super.key, required this.profileOwner});
+
+  @override
+  State<ViewProfileScreen> createState() => _ViewProfileScreenState();
+}
+
+class _ViewProfileScreenState extends State<ViewProfileScreen> {
   final _userDbService = UserDbService();
   final _guest = auth.FirebaseAuth.instance.currentUser!;
-  bool isFriend = false;
-  ViewProfileScreen({super.key, required this.profileOwner}) {
-    if (profileOwner.friends.contains(_guest.uid)) isFriend = true;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +28,8 @@ class ViewProfileScreen extends StatelessWidget {
       appBar: AppBar(
           iconTheme: IconThemeData(color: lightGreyHeaderColor),
           backgroundColor: darkBackGroundColor,
-          title: Text(profileOwner.userName, style: lightGreyHeadertStyle)),
+          title:
+              Text(widget.profileOwner.userName, style: lightGreyHeadertStyle)),
       body: Expanded(
         child: Column(
           children: [
@@ -47,16 +51,16 @@ class ViewProfileScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              ProfilePicture(userId: profileOwner.userId, radius: 50),
+              ProfilePicture(userId: widget.profileOwner.userId, radius: 50),
               const SizedBox(width: 50),
               Text(
-                "${profileOwner.friends.length}\nGymBuddies",
+                "${widget.profileOwner.friends.length}\nGymBuddies",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: lightGreyTextColor, fontSize: 16),
               ),
               const SizedBox(width: 30),
               Text(
-                "${profileOwner.friends.length}\nStreak",
+                "${widget.profileOwner.friends.length}\nStreak",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: lightGreyTextColor, fontSize: 16),
               ),
@@ -74,6 +78,7 @@ class ViewProfileScreen extends StatelessWidget {
 
   Widget _buildPostsGrid(BuildContext context) {
     final postsdbservice = PostDbService();
+    final isFriend = widget.profileOwner.friends.contains(_guest.uid);
     if (!isFriend) {
       return Center(
           child: Text("Send friend request to see posts.",
@@ -81,7 +86,7 @@ class ViewProfileScreen extends StatelessWidget {
               style: TextStyle(color: lightGreyHeaderColor, fontSize: 30)));
     }
     return StreamBuilder(
-      stream: postsdbservice.getSpecificUsersPosts(profileOwner.userId),
+      stream: postsdbservice.getSpecificUsersPosts(widget.profileOwner.userId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text("Error");
@@ -114,8 +119,8 @@ class ViewProfileScreen extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                ViewPostsScreen(postsOwner: profileOwner)));
+                            builder: (context) => ViewPostsScreen(
+                                postsOwner: widget.profileOwner)));
                   },
                 ),
               );
@@ -133,48 +138,36 @@ class ViewProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget sendFriendRequestButton(
-      BuildContext context, String senderuserId, String receiverUserId) {
+  Widget friendOperationsButton(
+      Function buttonFunc, Color buttonColor, String buttonText) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
+            backgroundColor: buttonColor,
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(9)))),
-        onPressed: () async {
-          await _userDbService.sendFriendRequest(
-              _guest.uid, profileOwner.userId);
-        },
+        onPressed: () async => buttonFunc,
         child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Text("Add GymBuddy",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: lightGreyTextColor, fontSize: 13)),
-        ));
-  }
-
-  Widget removeFromFriendsButton(
-      BuildContext context, String senderuserId, String receiverUserId) {
-    return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(9)))),
-        onPressed: () async {},
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Text("Remove GymBuddy",
+          width: MediaQuery.sizeOf(context).width,
+          child: Text(buttonText,
               textAlign: TextAlign.center,
               style: TextStyle(color: lightGreyTextColor, fontSize: 13)),
         ));
   }
 
   Widget _profileSideItems(BuildContext context) {
+    final isFriend = widget.profileOwner.friends.contains(_guest.uid);
     if (isFriend) {
-      return removeFromFriendsButton(context, _guest.uid, profileOwner.userId);
+      return friendOperationsButton(
+          () async => _userDbService.removeFromFriends(
+              _guest.uid, widget.profileOwner.userId),
+          Colors.redAccent,
+          "Remove from friends");
+    } else {
+      return friendOperationsButton(
+          () async => _userDbService.addToFriends(
+              _guest.uid, widget.profileOwner.userId),
+          Colors.blueAccent,
+          "Send friend request");
     }
-    if (!isFriend) {
-      return sendFriendRequestButton(context, _guest.uid, profileOwner.userId);
-    }
-    return const SizedBox();
   }
 }

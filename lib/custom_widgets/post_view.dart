@@ -4,6 +4,8 @@ import 'package:gym_application/custom_widgets/under_post_elements.dart';
 import 'package:gym_application/models/post.dart';
 import 'package:gym_application/models/user.dart';
 import 'package:gym_application/screens/comments_screen.dart';
+import 'package:gym_application/screens/view_profile_screen.dart';
+import 'package:gym_application/services/post_db_service.dart';
 import 'package:gym_application/services/user_db_service.dart';
 import 'package:gym_application/utils.dart';
 
@@ -16,12 +18,15 @@ class PostView extends StatefulWidget {
 }
 
 class _PostViewState extends State<PostView> {
-  final userDbService = UserDbService();
+  final _userDbService = UserDbService();
+  final _postDbService = PostDbService();
+  bool isLiked = false;
 
   Future<List<dynamic>> _getFutures() {
     return Future.wait([
       getProfilePictureURL(widget.post.posterId),
-      userDbService.getSpecificUser(widget.post.posterId)
+      _userDbService.getSpecificUser(widget.post.posterId),
+      _postDbService.isPostLiked(widget.post.postId),
     ]);
   }
 
@@ -31,14 +36,13 @@ class _PostViewState extends State<PostView> {
     return FutureBuilder(
       future: _getFutures(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
-              height: 500, child: Center(child: CircularProgressIndicator()));
-        } else if (snapshot.hasError) {
+        if (snapshot.hasError) {
           return const Center(child: Text("Error while loading posts!"));
         } else if (snapshot.hasData && snapshot.data != null) {
-          String ppUrl = snapshot.data![0];
-          User? user = snapshot.data![1];
+          final String ppUrl = snapshot.data![0];
+          final User? user = snapshot.data![1];
+          bool isLiked = snapshot.data![2];
+          int likes = widget.post.likes;
           return Container(
             decoration: const BoxDecoration(
                 color: Colors.transparent,
@@ -64,7 +68,11 @@ class _PostViewState extends State<PostView> {
                       ],
                     ),
                     onTap: () {
-                      //navigate to profile screen
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ViewProfileScreen(profileOwner: user!)));
                     },
                   ),
                 ),
@@ -80,7 +88,8 @@ class _PostViewState extends State<PostView> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                UnderPostElements(post: widget.post),
+                UnderPostElements(
+                    isLiked: isLiked, likes: likes, post: widget.post)
               ],
             ),
           );

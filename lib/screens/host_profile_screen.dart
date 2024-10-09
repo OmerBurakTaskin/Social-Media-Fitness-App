@@ -5,6 +5,7 @@ import 'package:gym_application/custom_colors.dart';
 import 'package:gym_application/custom_widgets/profile_picture.dart';
 import 'package:gym_application/models/post.dart';
 import 'package:gym_application/models/user.dart';
+import 'package:gym_application/screens/login_screen.dart';
 import 'package:gym_application/screens/view_posts_screen.dart';
 import 'package:gym_application/services/authentication_service.dart';
 import 'package:gym_application/services/post_db_service.dart';
@@ -27,7 +28,6 @@ class HostProfileScreen extends StatelessWidget {
     } else {
       host =
           User(userId: "1", userName: "User", email: "", name: "", surName: "");
-      //throw Exception("user couldnt fetch");
     }
   }
 
@@ -52,83 +52,7 @@ class HostProfileScreen extends StatelessWidget {
         host!.userName,
         style: TextStyle(color: lightGreyTextColor, fontSize: 18),
       ),
-      Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: IconButton(
-              onPressed: () => _showSettings(context),
-              icon: const Icon(Icons.more_vert)))
     ]);
-  }
-
-  Widget profileMenuButton(
-      Widget content, BuildContext context, void Function() onPressedMethod) {
-    return Container(
-      height: 60,
-      width: MediaQuery.of(context).size.width,
-      decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.grey))),
-      child: TextButton(
-        onPressed: onPressedMethod,
-        style: TextButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          minimumSize: const Size(300, 50),
-          foregroundColor: const Color.fromARGB(255, 206, 201, 201),
-        ),
-        child: content,
-      ),
-    );
-  }
-
-  void _showSettings(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: darkBackGroundColor,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 20.0),
-          child: SizedBox(
-            height: 300,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  profileMenuButton(const Text("SignOut"), context,
-                      () => AuthenticationService.logOut()),
-                  profileMenuButton(const Text("Settings"), context,
-                      () => AuthenticationService.logOut()),
-                  profileMenuButton(const Text("Upload Image"), context,
-                      () async {
-                    File? file = await getImageFromGallery(context);
-                    if (file != null) {
-                      final isSuccess =
-                          await _postsDbService.uploadPost(file, host!);
-                      if (isSuccess) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Image posted!")));
-                      } else {
-                        print("An error occured!");
-                      }
-                    }
-                  }),
-                  profileMenuButton(
-                      const Text("Change Profile Picture"), context, () async {
-                    File? file = await getImageFromGallery(context);
-                    if (file != null) {
-                      addOrChangeProfilePicture(file);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text(
-                              "An error occured. Please try again later.")));
-                    }
-                  })
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget _buildPostsGrid(BuildContext context) {
@@ -196,11 +120,5 @@ class HostProfileScreen extends StatelessWidget {
         },
         child:
             Text("Send request", style: TextStyle(color: lightGreyTextColor)));
-  }
-
-  Widget _profileSideItems(BuildContext context) {
-    return IconButton(
-        onPressed: () => _showSettings(context),
-        icon: const Icon(Icons.more_vert));
   }
 }

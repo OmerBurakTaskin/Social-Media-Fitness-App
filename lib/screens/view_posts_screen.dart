@@ -40,6 +40,7 @@ class _ViewPostsScreenState extends State<ViewPostsScreen> {
     return Scaffold(
       backgroundColor: themeColor1,
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.transparent,
         title: Text(
           widget.postsOwner.userName,

@@ -83,23 +83,23 @@ class StartChatScreen extends StatelessWidget {
       ]);
     }
 
-    return FutureBuilder(
-        future: getFutures(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text("An Error Occured"));
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(color: Colors.blue));
-          }
-          if (snapshot.hasData) {
-            final profilePictureURL = snapshot.data?[0] ??
-                "https://i.pinimg.com/564x/bd/cc/de/bdccde33dea7c9e549b325635d2c432e.jpg";
-            final receiver = snapshot.data![1];
+    return Material(
+      color: Colors.transparent,
+      child: FutureBuilder(
+          future: getFutures(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(child: Text("An Error "));
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator(color: Colors.white));
+            }
+            if (snapshot.hasData && !(snapshot.data!).contains(null)) {
+              final profilePictureURL = snapshot.data?[0] ??
+                  "https://i.pinimg.com/564x/bd/cc/de/bdccde33dea7c9e549b325635d2c432e.jpg";
+              final receiver = snapshot.data![1];
 
-            return Material(
-              color: Colors.transparent,
-              child: ListTile(
+              return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(profilePictureURL),
                 ),
@@ -117,10 +117,14 @@ class StartChatScreen extends StatelessWidget {
                     ),
                   );
                 },
-              ),
-            );
-          }
-          return const Center(child: Text("An Error Occured"));
-        });
+              );
+            }
+            return const Center(
+                child: Text(
+              "No available friends.",
+              style: TextStyle(color: Colors.white),
+            ));
+          }),
+    );
   }
 }

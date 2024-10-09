@@ -64,7 +64,7 @@ class UserDbService {
     }
   }
 
-  Future<void> addFriendToUsers(String senderId, String receiverId) async {
+  Future<void> addToFriends(String senderId, String receiverId) async {
     try {
       final userDoc = await _usersRef.doc(senderId).get();
       if (userDoc.exists) {
@@ -122,26 +122,67 @@ class UserDbService {
   }
 
   void acceptFriendRequest(String senderId, String receiverId) async {
-    _usersRef
+    _firestore
+        .collection("users")
         .doc(receiverId)
         .collection("pending-friend-requests")
         .doc(senderId)
-        .delete();
-    // adding their ids for one another
-    addFriendToUsers(senderId, receiverId);
-    addFriendToUsers(receiverId, senderId);
-    _usersRef
-        .doc(receiverId)
-        .collection("pending-friend-requests")
+        .delete(); // delete the request from the sender
+    _firestore
+        .collection("users")
         .doc(senderId)
+        .collection("pending-friend-requests")
+        .doc(receiverId)
         .delete(); // delete the request from the receiver
+
+    // adding their ids for one another
+    addToFriends(senderId, receiverId);
+    addToFriends(receiverId, senderId);
   }
 
-  void declineFriendRequest(String senderId, String receiverId) async {
-    _usersRef
+  Future<void> declineFriendRequest(String senderId, String receiverId) async {
+    _firestore
+        .collection("users")
         .doc(receiverId)
         .collection("pending-friend-requests")
         .doc(senderId)
         .delete();
+    _firestore
+        .collection("users")
+        .doc(senderId)
+        .collection("pending-friend-requests")
+        .doc(receiverId)
+        .delete();
+  }
+
+  Future<List<User?>> getFriendRequests(String userId) async {
+    final requestDocs = (await _usersRef
+            .doc(userId)
+            .collection("pending-friend-requests")
+            .get())
+        .docs;
+    final requestedUsers = await Future.wait(
+      requestDocs.map(
+        (doc) async {
+          return await getSpecificUser(doc.id);
+        },
+      ).toList(),
+    );
+    return requestedUsers;
+  }
+
+  Future<void> removeFromFriends(String userId, String friendId) async {
+    for (var [uId, fId] in [
+      [userId, friendId],
+      [friendId, userId]
+    ]) {
+      User? user = await getSpecificUser(uId);
+      if (user != null) {
+        user.friends.remove(fId);
+        user.chattingFriends.remove(fId);
+        await _firestore.collection("users").doc(uId).update(
+            {"friends": user.friends, "chattingFriends": user.chattingFriends});
+      }
+    }
   }
 }

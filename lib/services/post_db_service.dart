@@ -90,4 +90,41 @@ class PostDbService {
       print(e);
     }
   }
+
+  Future<bool> isPostLiked(String postId) async {
+    final likedPostsDoc = await _firestore
+        .collection("users/$userId/likedPosts")
+        .doc(postId)
+        .get();
+    return likedPostsDoc.exists;
+  }
+
+  Future<void> togglePostLike(Post post) async {
+    final bool isLiked = await isPostLiked(post.postId);
+    try {
+      if (isLiked) {
+        //remove liked post from user
+        _firestore
+            .collection("users/$userId/likedPosts")
+            .doc(post.postId)
+            .delete();
+        // dicrement like from post
+        _firestore
+            .collection("users/${post.posterId}/posts")
+            .doc(post.postId)
+            .update({"likes": post.likes - 1});
+      } else {
+        _firestore
+            .collection("users/$userId/likedPosts")
+            .doc(post.postId)
+            .set(post.toJson());
+        _firestore
+            .collection("users/${post.posterId}/posts")
+            .doc(post.postId)
+            .update({"likes": post.likes + 1});
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 }
