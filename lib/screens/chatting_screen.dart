@@ -29,14 +29,14 @@ class _ChattingScreenState extends State<ChattingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackGroundColor,
+      backgroundColor: themeColor1,
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.receiver.name,
           style: TextStyle(color: lightGreyHeaderColor),
         ),
-        backgroundColor: darkBackGroundColor,
+        backgroundColor: themeColor1,
       ),
       body: Column(children: [
         Expanded(
@@ -55,7 +55,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
           },
         )),
         Container(
-            decoration: BoxDecoration(color: darkBackGroundColor),
+            decoration: const BoxDecoration(color: Colors.transparent),
             child: chatTextBar())
       ]),
     );
@@ -63,50 +63,63 @@ class _ChattingScreenState extends State<ChattingScreen> {
 
   Widget chatTextBar() {
     return Container(
-        decoration: BoxDecoration(color: darkBackGroundColor),
+        decoration: const BoxDecoration(color: Colors.transparent),
         child: Row(
           children: [
-            Expanded(
-              child: _isMedia
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                      child: SizedBox(
-                          child: ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15)),
-                              child: Image.file(_selectedImage))),
-                    )
-                  : TextField(
-                      style: const TextStyle(color: Colors.white),
-                      cursorColor: lightGreyTextColor,
-                      decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                          fillColor: Colors.black,
-                          border: null,
-                          hintText: "Message...",
-                          hintStyle: TextStyle(color: Colors.grey)),
-                      controller: _messageController,
-                      onChanged: (value) {
-                        if (_messageController.text.trim().isNotEmpty) {
-                          setState(() {
-                            _attachMedia = false;
-                            _showMediaOptions = false;
-                          });
-                        } else {
-                          setState(() {
-                            _attachMedia = true;
-                          });
-                        }
-                      },
+            _isMedia
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Container(
+                        constraints: BoxConstraints(
+                            maxHeight: MediaQuery.sizeOf(context).height * 0.8,
+                            maxWidth: MediaQuery.sizeOf(context).width - 60),
+                        child: ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
+                            child: Image.file(
+                              _selectedImage,
+                              fit: BoxFit.contain,
+                            ))),
+                  )
+                : Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(60)),
+                          color: themeColor2),
+                      child: TextField(
+                        style: const TextStyle(color: Colors.white),
+                        cursorColor: lightGreyTextColor,
+                        decoration: const InputDecoration(
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 15),
+                            fillColor: Colors.black,
+                            border: null,
+                            hintText: "Message...",
+                            hintStyle: TextStyle(color: Colors.grey)),
+                        controller: _messageController,
+                        onChanged: (value) {
+                          if (_messageController.text.trim().isNotEmpty) {
+                            setState(() {
+                              _attachMedia = false;
+                              _showMediaOptions = false;
+                            });
+                          } else {
+                            setState(() {
+                              _attachMedia = true;
+                            });
+                          }
+                        },
+                      ),
                     ),
-            ),
+                  ),
             _attachMedia
                 ? AnimatedContainer(
                     width: _showMediaOptions ? 100 : 50,
                     duration: const Duration(milliseconds: 100),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(40),
-                        color: Colors.blue),
+                        color: themeColor6),
                     child: Center(
                         child: _showMediaOptions
                             ? Row(
@@ -155,7 +168,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
                 : Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(40),
-                        color: Colors.blue),
+                        color: themeColor6),
                     child: Center(
                       child: IconButton(
                           onPressed: () {
@@ -177,6 +190,8 @@ class _ChattingScreenState extends State<ChattingScreen> {
       setState(() {
         _isMedia = false;
         _selectedImage = File("");
+        _attachMedia = true;
+        _showMediaOptions = false;
       });
     } else {
       if (_messageController.text.trim().isNotEmpty) {
@@ -185,6 +200,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
         _messageController.clear();
         setState(() {
           _attachMedia = true;
+          _showMediaOptions = false;
         });
       }
     }
@@ -201,7 +217,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
       alignment: alignment,
       child: Container(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.8,
+          maxWidth: MediaQuery.sizeOf(context).width * 0.8,
         ),
         decoration: BoxDecoration(
             color: bubbleColor,

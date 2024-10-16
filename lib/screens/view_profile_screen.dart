@@ -4,9 +4,11 @@ import 'package:gym_application/custom_colors.dart';
 import 'package:gym_application/custom_widgets/profile_picture.dart';
 import 'package:gym_application/models/post.dart';
 import 'package:gym_application/models/user.dart';
+import 'package:gym_application/providers/ui_provider.dart';
 import 'package:gym_application/screens/view_posts_screen.dart';
 import 'package:gym_application/services/post_db_service.dart';
 import 'package:gym_application/services/user_db_service.dart';
+import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class ViewProfileScreen extends StatefulWidget {
@@ -23,11 +25,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<UIProvider>(context, listen: false);
     return Scaffold(
-      backgroundColor: darkBackGroundColor,
+      backgroundColor: provider.backgroundColor,
       appBar: AppBar(
           iconTheme: IconThemeData(color: lightGreyHeaderColor),
-          backgroundColor: darkBackGroundColor,
+          backgroundColor: Colors.transparent,
           title:
               Text(widget.profileOwner.userName, style: lightGreyHeadertStyle)),
       body: Expanded(
@@ -49,16 +52,14 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ProfilePicture(userId: widget.profileOwner.userId, radius: 50),
-              const SizedBox(width: 50),
               Text(
                 "${widget.profileOwner.friends.length}\nGymBuddies",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: lightGreyTextColor, fontSize: 16),
               ),
-              const SizedBox(width: 30),
               Text(
                 "${widget.profileOwner.friends.length}\nStreak",
                 textAlign: TextAlign.center,
@@ -98,7 +99,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
           List postsSnapshot = snapshot.data!.docs;
-          //final width = MediaQuery.of(context).size.width;
           return GridView.builder(
             itemCount: postsSnapshot.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -150,7 +150,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
           width: MediaQuery.sizeOf(context).width,
           child: Text(buttonText,
               textAlign: TextAlign.center,
-              style: TextStyle(color: lightGreyTextColor, fontSize: 13)),
+              style: TextStyle(color: lightGreyTextColor, fontSize: 14)),
         ));
   }
 

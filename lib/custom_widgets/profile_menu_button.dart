@@ -19,6 +19,7 @@ class ProfileMenuButton extends StatelessWidget {
         style: TextButton.styleFrom(
           backgroundColor: themeColor3,
           minimumSize: const Size(300, 50),
+          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           foregroundColor: const Color.fromARGB(255, 206, 201, 201),
         ),
         child: content,

@@ -1,64 +1,88 @@
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:gym_application/custom_colors.dart';
 import 'package:gym_application/custom_widgets/profile_picture.dart';
 import 'package:gym_application/models/post.dart';
 import 'package:gym_application/models/user.dart';
-import 'package:gym_application/screens/login_screen.dart';
+import 'package:gym_application/providers/ui_provider.dart';
 import 'package:gym_application/screens/view_posts_screen.dart';
-import 'package:gym_application/services/authentication_service.dart';
 import 'package:gym_application/services/post_db_service.dart';
 import 'package:gym_application/services/user_db_service.dart';
-import 'package:gym_application/utils.dart';
+import 'package:provider/provider.dart';
 
-class HostProfileScreen extends StatelessWidget {
+class HostProfileScreen extends StatefulWidget {
+  const HostProfileScreen({super.key});
+
+  @override
+  State<HostProfileScreen> createState() => _HostProfileScreenState();
+}
+
+class _HostProfileScreenState extends State<HostProfileScreen> {
   final _userDbService = UserDbService();
-  final _postsDbService = PostDbService();
   final _user = auth.FirebaseAuth.instance.currentUser!;
-  late final User? host;
-  HostProfileScreen({super.key}) {
-    initializeHost();
-  }
-
-  void initializeHost() async {
-    User? fetchedUser = await _userDbService.getSpecificUser(_user.uid);
-    if (fetchedUser != null) {
-      host = fetchedUser;
-    } else {
-      host =
-          User(userId: "1", userName: "User", email: "", name: "", surName: "");
-    }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) async {
+        User user = (await _userDbService.getSpecificUser(_user.uid))!;
+        Provider.of<UIProvider>(context, listen: false)
+            .changeHostTitle(user.userName);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          _buildUpperProfile(context),
-          const SizedBox(height: 20),
-          Expanded(child: _buildPostsGrid(context))
-        ],
-      ),
-    );
+    return FutureBuilder(
+        future: _userDbService.getSpecificUser(_user.uid),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            final host = snapshot.data!;
+            return Expanded(
+              child: Column(
+                children: [
+                  _buildUpperProfile(context, host),
+                  const SizedBox(height: 20),
+                  Expanded(child: _buildPostsGrid(context, host))
+                ],
+              ),
+            );
+          } else {
+            return const Center(
+              child: Text("An error occured. Please try again.",
+                  style: TextStyle(color: Colors.white, fontSize: 22)),
+            );
+          }
+        });
   }
 
-  Widget _buildUpperProfile(BuildContext context) {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      ProfilePicture(userId: host!.userId, radius: 50),
-      const SizedBox(width: 30),
-      Text(
-        host!.userName,
-        style: TextStyle(color: lightGreyTextColor, fontSize: 18),
+  Widget _buildUpperProfile(BuildContext context, User host) {
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      ProfilePicture(userId: host.userId, radius: 50),
+      RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(children: [
+          const TextSpan(text: "Gym Buddies\n", style: TextStyle(fontSize: 19)),
+          TextSpan(
+              text: host.friends.length.toString(),
+              style: const TextStyle(fontSize: 17, height: 1.5))
+        ]),
       ),
+      RichText(
+        textAlign: TextAlign.center,
+        text: const TextSpan(children: [
+          TextSpan(text: "Streak\n", style: TextStyle(fontSize: 19)),
+          TextSpan(text: "12", style: TextStyle(fontSize: 17, height: 1.5))
+        ]),
+      )
     ]);
   }
 
-  Widget _buildPostsGrid(BuildContext context) {
+  Widget _buildPostsGrid(BuildContext context, User host) {
     final postsdbservice = PostDbService();
     return StreamBuilder(
-      stream: postsdbservice.getSpecificUsersPosts(host!.userId),
+      stream: postsdbservice.getSpecificUsersPosts(host.userId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text("Error");
@@ -92,7 +116,7 @@ class HostProfileScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ViewPostsScreen(
-                                  postsOwner: host!,
+                                  postsOwner: host,
                                 )));
                   },
                 ),
@@ -109,16 +133,5 @@ class HostProfileScreen extends StatelessWidget {
         }
       },
     );
-  }
-
-  Widget sendFriendRequestButton(
-      BuildContext context, String senderuserId, String receiverUserId) {
-    return ElevatedButton(
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-        onPressed: () async {
-          await _userDbService.sendFriendRequest(_user.uid, host!.userId);
-        },
-        child:
-            Text("Send request", style: TextStyle(color: lightGreyTextColor)));
   }
 }

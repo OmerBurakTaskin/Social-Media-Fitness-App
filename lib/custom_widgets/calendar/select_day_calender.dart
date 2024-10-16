@@ -30,7 +30,7 @@ class _SelectDayCalenderElementState extends State<SelectDayCalenderElement> {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutQuart,
           height: 60,
-          width: MediaQuery.of(context).size.width / 7,
+          width: MediaQuery.sizeOf(context).width / 7,
           decoration: BoxDecoration(
               borderRadius: isSelected
                   ? const BorderRadius.all(Radius.circular(2))

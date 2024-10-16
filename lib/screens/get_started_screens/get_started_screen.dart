@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_application/home_page.dart';
+import 'package:gym_application/providers/ui_provider.dart';
+
 import 'package:gym_application/providers/workout_assets_provider.dart';
 import 'package:gym_application/screens/get_started_screens/bodyparts_of_days_screen.dart';
 import 'package:gym_application/screens/get_started_screens/select_workout_days_screen.dart';
@@ -19,8 +21,9 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
   int _pageIndex = 0;
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<UIProvider>(context);
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: provider.backgroundColor,
       body: Column(
         children: [
           Expanded(
@@ -40,7 +43,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
           ),
           SizedBox(
             height: 80,
-            width: MediaQuery.of(context).size.width,
+            width: MediaQuery.sizeOf(context).width,
             child: Stack(
               children: [
                 Align(

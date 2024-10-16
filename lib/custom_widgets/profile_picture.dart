@@ -15,7 +15,8 @@ class ProfilePicture extends StatelessWidget {
           if (snapshot.hasData) {
             return CircleAvatar(
               minRadius: radius.toDouble(),
-              backgroundImage: NetworkImage(snapshot.data.toString()),
+              backgroundImage:
+                  CachedNetworkImageProvider(snapshot.data.toString()),
             );
           }
           return SizedBox(height: 2.0 * radius, width: 2.0 * radius);

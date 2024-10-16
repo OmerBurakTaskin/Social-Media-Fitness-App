@@ -1,20 +1,17 @@
 import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:gym_application/custom_colors.dart';
 import 'package:gym_application/custom_widgets/hero_dialog_route.dart';
 import 'package:gym_application/custom_widgets/profile_menu_button.dart';
 import 'package:gym_application/custom_widgets/profile_picture.dart';
 import 'package:gym_application/models/user.dart';
-import 'package:gym_application/providers/background_provider.dart';
+import 'package:gym_application/providers/ui_provider.dart';
 import 'package:gym_application/screens/all_chats_screen.dart';
-import 'package:gym_application/screens/login_screen.dart';
-import 'package:gym_application/screens/stats_screen.dart';
 import 'package:gym_application/screens/find_user_screen.dart';
 import 'package:gym_application/screens/home_screen.dart';
 import 'package:gym_application/screens/host_profile_screen.dart';
@@ -35,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     const HomeScreen(),
     AllChatsScreen(),
     const FindUserScreen(),
-    StatsScreen(),
+    //StatsScreen(),
     HostProfileScreen(),
   ];
   final _userDbService = UserDbService();
@@ -43,19 +40,19 @@ class _HomePageState extends State<HomePage> {
   final _auth = auth.FirebaseAuth.instance;
   OverlayEntry? _overlayEntry;
   int _index = 0;
-  List<String> titles = ["Home", "Chats", "Find User", "Body Stats", "Profile"];
+  List<String> titles = ["Home", "Chats", "Find", /*"Body Stats",*/ "Profile"];
   bool _isMenuOpen = false;
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<BackgroundProvider>(context);
+    final provider = Provider.of<UIProvider>(context);
     final backgroundColor = provider.backgroundColor;
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: backgroundColor,
         title: Text(
-          titles[_index],
+          provider.title,
           style: const TextStyle(color: Colors.white),
         ),
         actions: getActions(),
@@ -66,12 +63,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(color: themeColor2),
+        decoration: BoxDecoration(color: provider.backgroundColor),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: GNav(
               onTabChange: _onTabChange,
-              color: themeColor4,
+              color: Colors.white,
               activeColor: Colors.white,
               padding: const EdgeInsets.all(16),
               tabBackgroundColor: const Color.fromARGB(66, 96, 93, 93),
@@ -88,12 +85,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 GButton(
                   icon: Icons.search_outlined,
-                  text: "Search",
+                  text: "Find",
                 ),
-                GButton(
+                /*GButton(
                   icon: Icons.query_stats_rounded,
                   text: "Stats",
-                ),
+                ),*/
                 GButton(
                   icon: Icons.person,
                   text: "Profile",
@@ -105,15 +102,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onTabChange(int index) {
+    final provider = Provider.of<UIProvider>(context, listen: false);
     if (_isMenuOpen) {
-      _closeMenu();
+      _closeFriendRequests();
     }
     setState(() {
       _index = index;
     });
     if (index != 3) {
-      final proivder = Provider.of<BackgroundProvider>(context, listen: false);
-      proivder.changeBackgroundColor(themeColor1);
+      provider.changeTitle(index);
     }
   }
 
@@ -123,18 +120,18 @@ class _HomePageState extends State<HomePage> {
         IconButton(
             onPressed: () {
               if (!_isMenuOpen) {
-                _openMenu(context);
+                _showFriendRequests(context);
               } else {
-                _closeMenu();
+                _closeFriendRequests();
               }
             },
-            icon: const Icon(Icons.notifications, color: Colors.white))
+            icon: const Icon(FontAwesomeIcons.userGroup, color: Colors.white))
       ];
     }
     if (_index == 1) {
       return [startChatButton()];
     }
-    if (_index == 4) {
+    if (_index == 3) {
       return [
         IconButton(
             onPressed: () => _showSettings(context),
@@ -158,7 +155,7 @@ class _HomePageState extends State<HomePage> {
             }));
   }
 
-  void _openMenu(BuildContext context) async {
+  void _showFriendRequests(BuildContext context) async {
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     final Offset position = renderBox.localToGlobal(Offset.zero);
     List<User?> requestedFriends = await _userDbService
@@ -168,7 +165,7 @@ class _HomePageState extends State<HomePage> {
       builder: (context) {
         return Positioned(
           top: kToolbarHeight + 35,
-          right: 16,
+          right: 10,
           child: Material(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             color: themeColor2,
@@ -178,51 +175,61 @@ class _HomePageState extends State<HomePage> {
               decoration: const BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: requestedFriends.map((user) {
-                  if (user == null) {
-                    return const SizedBox.shrink();
-                  }
-                  return Container(
-                    color: Colors.transparent,
-                    height: 60,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ProfilePicture(userId: user.userId),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: SizedBox(
-                            width: 80,
-                            child: AutoSizeText(
-                              maxFontSize: 15,
-                              maxLines: 1,
-                              user.userName,
-                              style: const TextStyle(color: Colors.white),
-                            ),
+              child: requestedFriends.isEmpty
+                  ? const SizedBox(
+                      height: 60,
+                      child: Center(
+                          child: Text(
+                        "No friend requests",
+                        style: TextStyle(color: Colors.white),
+                      )),
+                    )
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: requestedFriends.map((user) {
+                        if (user == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return Container(
+                          color: Colors.transparent,
+                          height: 60,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ProfilePicture(userId: user.userId),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
+                                child: SizedBox(
+                                  width: 80,
+                                  child: AutoSizeText(
+                                    maxFontSize: 15,
+                                    maxLines: 1,
+                                    user.userName,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              _friendRequestButton(
+                                  () => _userDbService.acceptFriendRequest(
+                                      _auth.currentUser!.uid, user.userId),
+                                  Colors.blue,
+                                  "Accept"),
+                              const SizedBox(width: 5),
+                              _friendRequestButton(
+                                  () => _userDbService.declineFriendRequest(
+                                      _auth.currentUser!.uid, user.userId),
+                                  Colors.red,
+                                  "Decline"),
+                              const SizedBox(width: 10),
+                            ],
                           ),
-                        ),
-                        _friendRequestViewButton(
-                            () => _userDbService.acceptFriendRequest(
-                                _auth.currentUser!.uid, user.userId),
-                            Colors.blue,
-                            "Accept"),
-                        const SizedBox(width: 5),
-                        _friendRequestViewButton(
-                            () => _userDbService.declineFriendRequest(
-                                _auth.currentUser!.uid, user.userId),
-                            Colors.red,
-                            "Decline"),
-                        const SizedBox(width: 10),
-                      ],
+                        );
+                      }).toList(),
                     ),
-                  );
-                }).toList(),
-              ),
             ),
           ),
         );
@@ -235,7 +242,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _closeMenu() {
+  void _closeFriendRequests() {
     _overlayEntry?.remove();
     setState(() {
       _isMenuOpen = false;
@@ -250,55 +257,63 @@ class _HomePageState extends State<HomePage> {
         return Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: SizedBox(
-            height: 300,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ProfileMenuButton(
-                      content: const Text("SignOut"),
-                      onPressedMethod: () {
-                        AuthenticationService.logOut();
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()));
-                      }),
-                  ProfileMenuButton(
-                      content: const Text("Settings"),
-                      onPressedMethod: () => print("Settings")),
-                  ProfileMenuButton(
-                      content: const Text("Upload Image"),
-                      onPressedMethod: () async {
-                        File? file = await getImageFromGallery(context);
-                        if (file != null) {
-                          final user = await _userDbService
-                              .getSpecificUser(_auth.currentUser!.uid);
-                          final isSuccess =
-                              await _postDbService.uploadPost(file, user!);
-                          if (isSuccess) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Image posted!")));
-                          } else {
-                            print("An error occured!");
-                          }
-                        }
-                      }),
-                  ProfileMenuButton(
-                      content: const Text("Change Profile Picture"),
-                      onPressedMethod: () async {
-                        File? file = await getImageFromGallery(context);
-                        if (file != null) {
-                          addOrChangeProfilePicture(file);
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text(
-                                  "An error occured. Please try again later.")));
-                        }
-                      })
-                ],
-              ),
+            height: 220,
+            child: Column(
+              children: [
+                Container(
+                  width: 60,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      color: themeColor2,
+                      borderRadius: BorderRadius.all(Radius.circular(5))),
+                ),
+                const SizedBox(height: 18),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ProfileMenuButton(
+                          content: const Text("SignOut"),
+                          onPressedMethod: () {
+                            AuthenticationService.logOut();
+                            SystemNavigator.pop();
+                          }),
+                      ProfileMenuButton(
+                          content: const Text("Upload Image"),
+                          onPressedMethod: () async {
+                            File? file = await getImageFromGallery(context);
+                            if (file != null) {
+                              final user = await _userDbService
+                                  .getSpecificUser(_auth.currentUser!.uid);
+                              final isSuccess =
+                                  await _postDbService.uploadPost(file, user!);
+                              if (isSuccess) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Image posted!")));
+                              } else {
+                                print("An error occured!");
+                              }
+                            }
+                          }),
+                      ProfileMenuButton(
+                          content: const Text("Change Profile Picture"),
+                          onPressedMethod: () async {
+                            File? file = await getImageFromGallery(context);
+                            if (file != null) {
+                              addOrChangeProfilePicture(file);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "An error occured. Please try again later.")));
+                            }
+                          })
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -306,7 +321,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _friendRequestViewButton(
+  Widget _friendRequestButton(
       Function method, Color buttonColor, String buttonText) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(

@@ -32,7 +32,7 @@ class _PostViewState extends State<PostView> {
 
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
+    var screenWidth = MediaQuery.sizeOf(context).width;
     return FutureBuilder(
       future: _getFutures(),
       builder: (context, snapshot) {

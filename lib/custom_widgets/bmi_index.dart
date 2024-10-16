@@ -19,7 +19,7 @@ class _BMIIndexCalculatorState extends State<BMIIndexCalculator> {
     final provider = Provider.of<WorkoutAssetsProvider>(context);
     return Container(
       height: 300,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.sizeOf(context).width,
       child: Column(
         children: [
           Row(
@@ -111,7 +111,7 @@ class _BMIIndexCalculatorState extends State<BMIIndexCalculator> {
   Widget BMIIndexContainer(String boxText, Color color) {
     return Container(
         height: 50,
-        width: MediaQuery.of(context).size.width / 5 - 4,
+        width: MediaQuery.sizeOf(context).width / 5 - 4,
         decoration: BoxDecoration(color: color),
         child: Center(
             child: Text(
@@ -131,7 +131,7 @@ class _BMIIndexCalculatorState extends State<BMIIndexCalculator> {
       provider.setHeight(double.parse(_heightTextFieldController.text.trim()));
       provider.setWeight(double.parse(_weightTextFieldController.text.trim()));
       bmi = provider.getBMIIndex;
-      double containerWidth = (MediaQuery.of(context).size.width - 20) / 5;
+      double containerWidth = (MediaQuery.sizeOf(context).width - 20) / 5;
       if (bmi <= 18.5) {
         padding = (bmi * containerWidth) / 18.5;
       } else if (bmi <= 25) {

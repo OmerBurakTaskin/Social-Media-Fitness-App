@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:gym_application/custom_colors.dart';
 import 'package:gym_application/firebase_options.dart';
 import 'package:gym_application/home_page.dart';
-import 'package:gym_application/providers/background_provider.dart';
+import 'package:gym_application/providers/ui_provider.dart';
 import 'package:gym_application/providers/workout_assets_provider.dart';
 import 'package:gym_application/screens/get_started_screens/get_started_screen.dart';
 import 'package:gym_application/screens/login_screen.dart';
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => WorkoutAssetsProvider()),
-        ChangeNotifierProvider(create: (context) => BackgroundProvider()),
+        ChangeNotifierProvider(create: (context) => UIProvider()),
       ],
       child: MaterialApp(
         color: themeColor1,
