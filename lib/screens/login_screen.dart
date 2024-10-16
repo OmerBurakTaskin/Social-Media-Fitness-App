@@ -1,8 +1,12 @@
 import "package:flutter/material.dart";
-import "package:gym_application/main.dart";
+import "package:font_awesome_flutter/font_awesome_flutter.dart";
+import "package:gym_application/home_page.dart";
+import "package:gym_application/custom_colors.dart";
+import "package:gym_application/screens/get_started_screens/get_started_screen.dart";
 import "package:gym_application/services/authentication_service.dart";
 import "package:gym_application/custom_widgets/custom_textfield.dart";
 import "package:gym_application/screens/signup_screen.dart";
+import "package:hive/hive.dart";
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,9 +23,12 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       var userCredentials =
           await AuthenticationService.signinWithEmailPassword(email, password);
-      if (AuthenticationService.emailVerified) {
+      if (AuthenticationService.emailVerified && Hive.isBoxOpen("bodyAssets")) {
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MyHomePage()));
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      } else if (AuthenticationService.emailVerified = true) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const GetStartedScreen()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Row(
@@ -45,41 +52,97 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Gym Application")),
-      body: Center(
-        child: Column(
-          children: [
-            mailInput,
-            passwordInput,
-            SizedBox(
-              height: 50,
-            ),
-            ElevatedButton(
-                onPressed: () async {
-                  if (passwordInput.getText().isNotEmpty &&
-                      mailInput.getText().isNotEmpty) {
-                    try {
-                      signIn(context, mailInput.getText().trim(),
-                          passwordInput.getText().trim());
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text(
-                              "Too many verification mail sent. Try again later")));
-                    }
-                  }
-                },
-                child: Text("LOGIN")),
-            Row(
-              children: [
-                TextButton(
-                    onPressed: null, child: Text("Forgot Your Password?")),
-                TextButton(
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SignUpScreen())),
-                    child: Text("Sign Up")),
-              ],
+      backgroundColor: themeColor4,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 150,
+                    child: Center(
+                      child: Text("Welcome to Fittness App !",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: themeColor2,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  Expanded(
+                      child: Container(
+                    decoration: BoxDecoration(
+                      color: themeColor3,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30)),
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 40),
+                          child: FaIcon(FontAwesomeIcons.dumbbell,
+                              size: 100, color: themeColor1),
+                        ),
+                        mailInput,
+                        passwordInput,
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        ElevatedButton(
+                            style: ButtonStyle(
+                                fixedSize: WidgetStateProperty.all(Size(
+                                    MediaQuery.of(context).size.width - 50,
+                                    50)),
+                                backgroundColor:
+                                    WidgetStateProperty.all(themeColor1)),
+                            onPressed: () async {
+                              if (passwordInput.getText().isNotEmpty &&
+                                  mailInput.getText().isNotEmpty) {
+                                try {
+                                  signIn(context, mailInput.getText().trim(),
+                                      passwordInput.getText().trim());
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "Too many verification mail sent. Try again later")));
+                                }
+                              }
+                            },
+                            child: Text(
+                              "LOGIN",
+                              style: TextStyle(color: themeColor4),
+                            )),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            /*TextButton(
+                            onPressed: null,
+                            child: Text("Forgot Your Password?")),*/
+                            Text(
+                              "Don't have an account?",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            TextButton(
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SignUpScreen())),
+                                child: Text(
+                                  "Sign Up",
+                                  style: TextStyle(color: themeColor4),
+                                )),
+                          ],
+                        )
+                      ],
+                    ),
+                  )),
+                ],
+              ),
             )
           ],
         ),

@@ -12,17 +12,64 @@ class StartChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _size = MediaQuery.of(context).size;
+
+    Future<List<dynamic>> getFutures() {
+      return Future.wait([
+        _userDbService.getUserFriends(currentUser.uid),
+        _userDbService.getChattingFriendIdsOfUser(currentUser.uid)
+      ]);
+    }
+
     return Hero(
       tag: "tag-1",
       child: FutureBuilder(
-        future: _userDbService.getUserFriends(currentUser.uid),
+        future: getFutures(),
         builder: (context, snapshot) {
-          return buildAccordingSnapshot(snapshot) ??
-              Expanded(
-                  child: ListView(
-                      children: snapshot.data!
-                          .map((e) => createChatListTile(e))
-                          .toList()));
+          if (snapshot.hasData) {
+            final friends = List<String>.from(snapshot.data?[0] ?? []);
+            final chattingFriends = List<String>.from(snapshot.data?[1] ?? []);
+            List<String> displayedFriends =
+                friends.where((e) => !chattingFriends.contains(e)).toList();
+            if (displayedFriends.isEmpty) {
+              return Center(
+                  child: Container(
+                      decoration: BoxDecoration(
+                          color: darkBlueBackgroundColor,
+                          borderRadius: BorderRadius.circular(12)),
+                      height: _size.height / 2,
+                      width: _size.width / 1.2,
+                      child: const Center(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Text(
+                            "No available friends.",
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ),
+                      )));
+            }
+            return Center(
+                child: Container(
+              decoration: BoxDecoration(
+                  color: darkBlueBackgroundColor,
+                  borderRadius: BorderRadius.circular(12)),
+              height: _size.height / 2,
+              width: _size.width / 1.2,
+              child: ListView(
+                  children: displayedFriends
+                      .map((friendId) => createChatListTile(friendId))
+                      .toList()),
+            ));
+          }
+          return Center(
+              child: Container(
+            decoration: BoxDecoration(
+                color: darkBlueBackgroundColor,
+                borderRadius: BorderRadius.circular(12)),
+            height: _size.height / 2,
+            width: _size.width / 1.2,
+          ));
         },
       ),
     );
@@ -36,22 +83,23 @@ class StartChatScreen extends StatelessWidget {
       ]);
     }
 
-    return FutureBuilder(
-        future: getFutures(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text("An Error Occured"));
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(color: Colors.blue));
-          }
-          if (snapshot.hasData) {
-            final profilePictureURL = snapshot.data?[0] ??
-                "https://i.pinimg.com/564x/bd/cc/de/bdccde33dea7c9e549b325635d2c432e.jpg";
-            final receiver = snapshot.data![1];
-            return Material(
-              color: Colors.transparent,
-              child: ListTile(
+    return Material(
+      color: Colors.transparent,
+      child: FutureBuilder(
+          future: getFutures(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(child: Text("An Error "));
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator(color: Colors.white));
+            }
+            if (snapshot.hasData && !(snapshot.data!).contains(null)) {
+              final profilePictureURL = snapshot.data?[0] ??
+                  "https://i.pinimg.com/564x/bd/cc/de/bdccde33dea7c9e549b325635d2c432e.jpg";
+              final receiver = snapshot.data![1];
+
+              return ListTile(
                 leading: CircleAvatar(
                   backgroundImage: NetworkImage(profilePictureURL),
                 ),
@@ -69,10 +117,14 @@ class StartChatScreen extends StatelessWidget {
                     ),
                   );
                 },
-              ),
-            );
-          }
-          return const Center(child: Text("An Error Occured"));
-        });
+              );
+            }
+            return const Center(
+                child: Text(
+              "No available friends.",
+              style: TextStyle(color: Colors.white),
+            ));
+          }),
+    );
   }
 }
