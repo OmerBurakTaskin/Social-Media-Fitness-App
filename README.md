@@ -18,12 +18,16 @@ Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and
 - Leagues (Willing groups and users will be matched to increase rivalry and motivation)
 
 ## Some Screenshots
-![Screenshot_1729280712](https://github.com/user-attachments/assets/760113df-30d5-489e-9e1f-f84286e3b03b)
-![Screenshot_1729280765](https://github.com/user-attachments/assets/797b9f96-f015-46dc-b07c-4bf2c008247f)
-![Screenshot_1729280740](https://github.com/user-attachments/assets/2d8958e5-4b0a-4341-9038-1a4a567f366b)
-![Screenshot_1729280732](https://github.com/user-attachments/assets/5875496d-bbb8-44b1-80f7-08d0739b52a2)
 
-## Technologies Used
+<img src="https://github.com/user-attachments/assets/760113df-30d5-489e-9e1f-f84286e3b03b" alt="Screenshot_1729280712" width="300"/>
+
+<img src="https://github.com/user-attachments/assets/797b9f96-f015-46dc-b07c-4bf2c008247f" alt="Screenshot_1729280765" width="300"/>
+
+<img src="https://github.com/user-attachments/assets/2d8958e5-4b0a-4341-9038-1a4a567f366b" alt="Screenshot_1729280740" width="300"/>
+
+<img src="https://github.com/user-attachments/assets/5875496d-bbb8-44b1-80f7-08d0739b52a2" alt="Screenshot_1729280732" width="300"/>
+
+
 ## Technologies Used
 
 |           Package           |                                    Usage                                    |
