@@ -12,10 +12,6 @@ Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and
 - Track body mass index(BMI)
 - Create weekly fitness program
 
-## 📆 What's Upcoming 
-- UI for body stats(Charts for track the status, etc)
-- Streak Groups (Users who have fitness groups can gain streak points together without sharing same pic each user.)
-- Leagues (Willing groups and users will be matched to increase rivalry and motivation)
 
 ## Some Screenshots
 
@@ -24,9 +20,6 @@ Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and
 <img src="https://github.com/user-attachments/assets/2d8958e5-4b0a-4341-9038-1a4a567f366b" alt="Screenshot_1729280740" width="300" style="padding: 10px;"/>
 
 <img src="https://github.com/user-attachments/assets/797b9f96-f015-46dc-b07c-4bf2c008247f" alt="Screenshot_1729280765" width="300" style="padding: 10px;"/>
-
-
-
 
 
 
@@ -47,6 +40,10 @@ Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and
 | `auto_size_text`            | Automatically adjusts the size of the text to fit within its bounds.        |
 
 
+## 📆 What's Upcoming 
+- UI for body stats(Charts for track the status, etc)
+- Streak Groups (Users who have fitness groups can gain streak points together without sharing same pic each user.)
+- Leagues (Willing groups and users will be matched to increase rivalry and motivation)
 
 
 ### 🙋🏻‍♂️ Contact Me 
