@@ -15,7 +15,7 @@ Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and
 
 ## Some Screenshots
 
-### Get Started Screens
+### Get Started Pages
 <img src="https://github.com/user-attachments/assets/5875496d-bbb8-44b1-80f7-08d0739b52a2" alt="Screenshot_1729280732" width="300" style="padding: 10px;"/>
 
 <img src="https://github.com/user-attachments/assets/2d8958e5-4b0a-4341-9038-1a4a567f366b" alt="Screenshot_1729280740" width="300" style="padding: 10px;"/>
