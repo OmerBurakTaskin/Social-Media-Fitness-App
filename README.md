@@ -21,6 +21,19 @@ Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and
 
 <img src="https://github.com/user-attachments/assets/797b9f96-f015-46dc-b07c-4bf2c008247f" alt="Screenshot_1729280765" width="300" style="padding: 10px;"/>
 
+<img src="https://github.com/user-attachments/assets/0d42d652-03fe-4559-a46a-40cd8725f32c" alt="Screenshot_1729420340" width="300" style="padding: 10px;" />
+
+<img src="https://github.com/user-attachments/assets/67b1d3b7-5876-4f87-beb8-85102ea24b17" alt="Screenshot_1729434413" width="300" style="padding: 10px;" />
+
+<img src="https://github.com/user-attachments/assets/73387b6d-7152-4930-b2ce-ea3a48d679c6" alt="Screenshot_1729434425" width="300" style="padding: 10px;" />
+
+<img src="https://github.com/user-attachments/assets/dedad449-443c-48fb-ac00-13d1be4184fa" alt="Screenshot_1729431850" width="300" style="padding: 10px;" />
+
+<img src="https://github.com/user-attachments/assets/e2a3b304-f05c-45ee-9aa8-6b9ab1ab2280" alt="Screenshot_1729432485" width="300" style="padding: 10px;" />
+
+<img src="https://github.com/user-attachments/assets/b1fd1470-3594-4cd1-9dd3-8503fd02a4aa" alt="chats" width="300" style="padding: 10px;" />
+
+
 
 
 ## Technologies Used
