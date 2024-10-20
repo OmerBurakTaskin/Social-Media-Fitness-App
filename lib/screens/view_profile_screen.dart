@@ -56,7 +56,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
             children: [
               ProfilePicture(userId: widget.profileOwner.userId, radius: 50),
               Text(
-                "${widget.profileOwner.friends.length}\nGymBuddies",
+                "${widget.profileOwner.friends.length}\nGym Partners",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: lightGreyTextColor, fontSize: 16),
               ),
@@ -82,7 +82,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     final isFriend = widget.profileOwner.friends.contains(_guest.uid);
     if (!isFriend) {
       return Center(
-          child: Text("Send friend request to see posts.",
+          child: Text("Send friend request to see the progress.",
               textAlign: TextAlign.center,
               style: TextStyle(color: lightGreyHeaderColor, fontSize: 30)));
     }

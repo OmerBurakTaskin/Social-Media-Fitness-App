@@ -1,14 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive/hive.dart';
 
-const BODYSTATSBOX = "body-stats";
+const BODYSTATSKEY = "body-stats";
 
 enum BodyComposition { MUSCLE, WATER, FAT }
 
 class BodyStatsDbService {
+  static Future<void> openUserStatBox() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    await Hive.openBox(userId);
+  }
+
   Future<Map<DateTime, double>?> getWeightData() async {
-    final box = await Hive.openBox(BODYSTATSBOX);
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final box = await Hive.openBox(userId);
     try {
-      return Map<DateTime, double>.from(await box.get("weight-data"));
+      final bodyStatsMap = box.get(BODYSTATSKEY) as Map?;
+      if (bodyStatsMap != null && bodyStatsMap.containsKey("weight-data")) {
+        return Map<DateTime, double>.from(bodyStatsMap["weight-data"]);
+      }
+      return null;
     } catch (e) {
       print("ERROR!: COULDNT GET WEIGHT DATA");
       return null;
@@ -16,40 +27,32 @@ class BodyStatsDbService {
   }
 
   Future<void> addOrSetWeightData(DateTime recordDate, double weight) async {
-    final box = await Hive.openBox(BODYSTATSBOX);
-    final weightData = await getWeightData();
-    if (weightData == null) {
-      await box.put("weight-data", {recordDate, weight});
-    } else {
-      weightData[recordDate] = weight;
-      await box.put("weight-data", weightData);
-    }
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final box = await Hive.openBox(userId);
+    final weightData = await getWeightData() ?? {};
+    weightData[recordDate] = weight;
+
+    final bodyStatsMap = box.get(BODYSTATSKEY) as Map? ?? {};
+    bodyStatsMap["weight-data"] = weightData;
+    await box.put(BODYSTATSKEY, bodyStatsMap);
   }
 
-  Future<Map<BodyComposition, Map<DateTime, double>>?>
-      getBodyCompositionData() async {
-    final box = await Hive.openBox(BODYSTATSBOX);
-    try {
-      return Map<BodyComposition, Map<DateTime, double>>.from(
-          await box.get("body-composition-data"));
-    } catch (e) {
-      print("ERROR!: COULDNT GET BODY COMPOSITION DATA");
-      return null;
-    }
+  Future<void> addBodyCompositionData(
+      BodyComposition type, double value) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final box = await Hive.openBox(userId);
+    final bodyStatsMap = box.get(BODYSTATSKEY) as Map? ?? {};
+    bodyStatsMap[type.toString()] = value;
+    await box.put(BODYSTATSKEY, bodyStatsMap);
   }
 
-  Future<void> addOrSetBodyCompositionData(DateTime recordDate,
-      double compositionPercentage, BodyComposition bodyComposition) async {
-    final box = await Hive.openBox(BODYSTATSBOX);
-    final bodyCompostionData = await getBodyCompositionData();
-    if (bodyCompostionData == null) {
-      await box.put("body-composition-data", {
-        bodyComposition: {recordDate, compositionPercentage}
-      });
-    } else {
-      bodyCompostionData[bodyComposition]![recordDate] = compositionPercentage;
-      await box.put("body-composition-data", bodyCompostionData);
+  Future<double?> getBodyCompositionData(BodyComposition type) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final box = await Hive.openBox(userId);
+    final bodyStatsMap = box.get(BODYSTATSKEY) as Map?;
+    if (bodyStatsMap != null && bodyStatsMap.containsKey(type.toString())) {
+      return bodyStatsMap[type.toString()] as double?;
     }
+    return null;
   }
-  
 }

@@ -1,5 +1,6 @@
 {
     "editor.wordWrapColumn": 120,
     "editor.wordWrap": "on",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "cmake.sourceDirectory": "C:/projelerim/gym_application/linux"
 }

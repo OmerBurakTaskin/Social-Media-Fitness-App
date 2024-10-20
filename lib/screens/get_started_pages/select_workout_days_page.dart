@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:gym_application/custom_widgets/calendar/calender_controller.dart';
 import 'package:gym_application/custom_widgets/calendar/select_day_calender.dart';
 
-class SelectWorkoutDaysScreen extends StatefulWidget {
-  const SelectWorkoutDaysScreen({super.key});
+class SelectWorkoutDaysPage extends StatefulWidget {
+  const SelectWorkoutDaysPage({super.key});
 
   @override
-  State<SelectWorkoutDaysScreen> createState() =>
-      _SelectWorkoutDaysScreenState();
+  State<SelectWorkoutDaysPage> createState() => _SelectWorkoutDaysPageState();
 }
 
-class _SelectWorkoutDaysScreenState extends State<SelectWorkoutDaysScreen> {
+class _SelectWorkoutDaysPageState extends State<SelectWorkoutDaysPage> {
   final List<Widget> calenderElements = List.generate(
       7,
       (index) => SelectDayCalenderElement(

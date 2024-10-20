@@ -63,17 +63,17 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
       RichText(
         textAlign: TextAlign.center,
         text: TextSpan(children: [
-          const TextSpan(text: "Gym Buddies\n", style: TextStyle(fontSize: 19)),
           TextSpan(
-              text: host.friends.length.toString(),
-              style: const TextStyle(fontSize: 17, height: 1.5))
+              text: "${host.friends.length}\n",
+              style: const TextStyle(fontSize: 19, height: 1.5)),
+          const TextSpan(text: "Gym Partners", style: TextStyle(fontSize: 19)),
         ]),
       ),
       RichText(
         textAlign: TextAlign.center,
         text: const TextSpan(children: [
-          TextSpan(text: "Streak\n", style: TextStyle(fontSize: 19)),
-          TextSpan(text: "12", style: TextStyle(fontSize: 17, height: 1.5))
+          TextSpan(text: "12\n", style: TextStyle(fontSize: 19, height: 1.5)),
+          TextSpan(text: "Streak", style: TextStyle(fontSize: 19)),
         ]),
       )
     ]);

@@ -5,13 +5,13 @@ import 'package:gym_application/custom_widgets/back_body.dart';
 import 'package:gym_application/custom_widgets/front_body.dart';
 import 'package:provider/provider.dart';
 
-class BodypartsOfDaysScreen extends StatefulWidget {
-  const BodypartsOfDaysScreen({super.key});
+class BodypartsOfDaysPage extends StatefulWidget {
+  const BodypartsOfDaysPage({super.key});
   @override
-  State<BodypartsOfDaysScreen> createState() => _BodypartsOfDaysScreenState();
+  State<BodypartsOfDaysPage> createState() => _BodypartsOfDaysPageState();
 }
 
-class _BodypartsOfDaysScreenState extends State<BodypartsOfDaysScreen> {
+class _BodypartsOfDaysPageState extends State<BodypartsOfDaysPage> {
   int? _expandedIndex;
 
   @override

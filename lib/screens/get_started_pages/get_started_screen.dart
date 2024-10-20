@@ -1,12 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_application/home_page.dart';
 import 'package:gym_application/providers/ui_provider.dart';
 
 import 'package:gym_application/providers/workout_assets_provider.dart';
-import 'package:gym_application/screens/get_started_screens/bodyparts_of_days_screen.dart';
-import 'package:gym_application/screens/get_started_screens/select_workout_days_screen.dart';
-import 'package:gym_application/screens/get_started_screens/user_body_assets_screen.dart';
+import 'package:gym_application/screens/get_started_pages/bodyparts_of_days_page.dart';
+import 'package:gym_application/screens/get_started_pages/select_workout_days_page.dart';
+import 'package:gym_application/screens/get_started_pages/user_body_assets_page.dart';
 import 'package:gym_application/services/local_db_service.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
 class GetStartedScreen extends StatefulWidget {
@@ -35,9 +37,9 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                 });
               },
               children: const [
-                UserBodyAssetsScreen(),
-                SelectWorkoutDaysScreen(),
-                BodypartsOfDaysScreen(),
+                UserBodyAssetsPage(),
+                SelectWorkoutDaysPage(),
+                BodypartsOfDaysPage(),
               ],
             ),
           ),
@@ -131,7 +133,9 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     backgroundColor: Colors.green,
                     content: Text("Workout plan saved!")));
-                await Future.delayed(Duration(seconds: 2));
+                await Future.delayed(const Duration(seconds: 2));
+                await Hive.box("user")
+                    .put(FirebaseAuth.instance.currentUser!.uid, true);
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => HomePage()));
               }

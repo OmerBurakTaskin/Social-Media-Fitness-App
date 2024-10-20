@@ -10,11 +10,6 @@ class MusclePathPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Path path = parseSvgPathData(pathData);
-    // double scaleX = size.width / path.getBounds().width;
-    // double scaleY = size.height / path.getBounds().height;
-    // path = path.transform(Matrix4.diagonal3Values(scaleX, scaleY, 1.0).storage);
-    // Ölçeklendiriyoruz, ancak min değeri seçerek orantılı bir şekilde küçültüyoruz
-    // double scale = scaleX < scaleY ? scaleX : scaleY;
     path = path.transform(Matrix4.diagonal3Values(0.4, 0.4, 1.0).storage);
 
     // Ortalamak için x ve y eksenindeki offset değerlerini hesaplıyoruz

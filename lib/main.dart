@@ -7,7 +7,7 @@ import 'package:gym_application/firebase_options.dart';
 import 'package:gym_application/home_page.dart';
 import 'package:gym_application/providers/ui_provider.dart';
 import 'package:gym_application/providers/workout_assets_provider.dart';
-import 'package:gym_application/screens/get_started_screens/get_started_screen.dart';
+import 'package:gym_application/screens/get_started_pages/get_started_screen.dart';
 import 'package:gym_application/screens/login_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -18,19 +18,20 @@ void main() async {
   FirebaseFirestore.instance.settings =
       const Settings(persistenceEnabled: true);
   await Hive.initFlutter();
-  await Hive.openBox("bodyAssets");
+  await Hive.openBox("user");
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   Widget getInitialScreen() {
     final emailVerified = FirebaseAuth.instance.currentUser == null
         ? false
         : FirebaseAuth.instance.currentUser!.emailVerified;
-    final gotInitialInfo = Hive.box("bodyAssets").containsKey("workoutPlan") &&
-        Hive.box("bodyAssets").containsKey("bodyInfo");
+    final gotInitialInfo = emailVerified
+        ? Hive.box("user").containsKey(FirebaseAuth.instance.currentUser!.uid)
+        : false;
     if (emailVerified == true && gotInitialInfo == false) {
       return const GetStartedScreen();
     } else if (emailVerified == true && gotInitialInfo == true) {
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         color: themeColor1,
-        title: 'Flutter Demo',
+        title: 'Fitness Social Media App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: themeColor1),

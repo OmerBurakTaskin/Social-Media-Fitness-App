@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gym_application/custom_widgets/bmi_index.dart';
 
-class UserBodyAssetsScreen extends StatelessWidget {
-  const UserBodyAssetsScreen({super.key});
+class UserBodyAssetsPage extends StatelessWidget {
+  const UserBodyAssetsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:font_awesome_flutter/font_awesome_flutter.dart";
 import "package:gym_application/home_page.dart";
 import "package:gym_application/custom_colors.dart";
-import "package:gym_application/screens/get_started_screens/get_started_screen.dart";
+import "package:gym_application/screens/get_started_pages/get_started_screen.dart";
 import "package:gym_application/services/authentication_service.dart";
 import "package:gym_application/custom_widgets/custom_textfield.dart";
 import "package:gym_application/screens/signup_screen.dart";
