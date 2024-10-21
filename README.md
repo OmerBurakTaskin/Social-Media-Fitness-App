@@ -33,8 +33,6 @@ Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and
 
 <img src="https://github.com/user-attachments/assets/e2a3b304-f05c-45ee-9aa8-6b9ab1ab2280" alt="Screenshot_1729432485" width="300" style="padding: 10px;" />
 
-<img src="https://github.com/user-attachments/assets/b1fd1470-3594-4cd1-9dd3-8503fd02a4aa" alt="chats" width="300" style="padding: 10px;" />
-
 
 
 
