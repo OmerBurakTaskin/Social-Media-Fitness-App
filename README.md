@@ -1,7 +1,7 @@
 # Fitness Social Media App 
 
 A social app for created with Flutter Framework to motivate users keep their fitness streak and help them track their body status.
-Each time an user share progress, gains a streak point. These sharings can be private (directly to their gym partner with direct message) or publicly in their profile screen. By this, we aim users to keep motivated and follow their fitness program.
+Each time an user share progress in their workout days, gains a streak point. These sharings can be private (directly to their gym partner with direct message) or publicly in their profile screen. By this, we aim users to keep motivated and follow their fitness program.
 Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and weekly body excercise program.
 
 
@@ -56,7 +56,7 @@ Users also can track their body status(BMI Index, Fat, Muscle, Water ratios) and
 
 
 ## 📆 What's Upcoming 
-- UI for body stats(Charts for track the status, etc)
+- UI for body stats(Charts for track the status, etc.)
 - Streak Groups (Users who have fitness groups can gain streak points together without sharing same pic each user.)
 - Leagues (Willing groups and users will be matched to increase rivalry and motivation)
 
